@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import { Button } from "../ui/button";
-import GuestImport from "./GuestImport";
-import { Guest } from "./GuestImport";
-import { Card } from "../ui/card";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Textarea } from "../ui/textarea";
-import { Switch } from "../ui/switch";
-import { Badge } from "../ui/badge";
-import { ScrollArea } from "../ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import GuestImport, { Guest } from "./GuestImport";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Mail,
   Share2,
@@ -18,22 +17,26 @@ import {
   Check,
   X,
   Sparkles,
+  UserPlus,
 } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
+import AddGuestDialog from "./AddGuestDialog";
 
 interface GuestManagementProps {
-  guests?: Array<Guest & {
-    id: string;
-    rsvp: "pending" | "accepted" | "declined";
-    dietary?: string;
-  }>;
+  guests?: Array<
+    Guest & {
+      id: string;
+      rsvp: "pending" | "accepted" | "declined";
+      dietary?: string;
+    }
+  >;
   onInvite?: (method: string, guests: Guest[], message?: string) => void;
   onRsvpUpdate?: (guestId: string, status: "accepted" | "declined") => void;
 }
@@ -54,13 +57,11 @@ const GuestManagement = ({
     },
     { id: "3", name: "Bob Wilson", email: "bob@example.com", rsvp: "declined" },
   ]);
-  onInvite = () => {},
-  onRsvpUpdate = () => {},
-}: GuestManagementProps) => {
   const [inviteLink, setInviteLink] = React.useState(
     "https://event.com/invite/abc123",
   );
   const [copied, setCopied] = React.useState(false);
+  const [showAddGuest, setShowAddGuest] = React.useState(false);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(inviteLink);
@@ -81,16 +82,31 @@ const GuestManagement = ({
 
         <TabsContent value="add">
           <Card className="p-6">
-            <GuestImport
-              onImport={(importedGuests) => {
-                const newGuests = importedGuests.map(guest => ({
-                  ...guest,
-                  id: Math.random().toString(),
-                  rsvp: "pending" as const
-                }));
-                setGuestList(prev => [...prev, ...newGuests]);
-              }}
-            />
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Add Guests</h3>
+                <Button onClick={() => setShowAddGuest(true)}>
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Add Guest
+                </Button>
+              </div>
+
+              <div className="border-t pt-6">
+                <h4 className="text-sm font-medium mb-4">
+                  Import Multiple Guests
+                </h4>
+                <GuestImport
+                  onImport={(importedGuests) => {
+                    const newGuests = importedGuests.map((guest) => ({
+                      ...guest,
+                      id: Math.random().toString(),
+                      rsvp: "pending" as const,
+                    }));
+                    setGuestList((prev) => [...prev, ...newGuests]);
+                  }}
+                />
+              </div>
+            </div>
           </Card>
         </TabsContent>
 
@@ -259,6 +275,21 @@ const GuestManagement = ({
           </Card>
         </TabsContent>
       </Tabs>
+
+      <AddGuestDialog
+        open={showAddGuest}
+        onOpenChange={setShowAddGuest}
+        onAdd={(guest) => {
+          setGuestList((prev) => [
+            ...prev,
+            {
+              ...guest,
+              id: Math.random().toString(),
+              rsvp: "pending" as const,
+            },
+          ]);
+        }}
+      />
     </div>
   );
 };
