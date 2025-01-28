@@ -16,6 +16,8 @@ interface AuthDialogProps {
   onComplete: () => void;
 }
 
+import { useAuth0 } from "@auth0/auth0-react";
+
 export default function AuthDialog({
   open,
   onOpenChange,
@@ -73,8 +75,15 @@ export default function AuthDialog({
                 placeholder="Enter your password"
               />
             </div>
-            <Button className="w-full" onClick={onComplete}>
-              Login
+            <Button
+              className="w-full"
+              onClick={() => {
+                const { loginWithRedirect } = useAuth0();
+                loginWithRedirect();
+                onComplete();
+              }}
+            >
+              Login with Auth0
             </Button>
           </TabsContent>
         </Tabs>

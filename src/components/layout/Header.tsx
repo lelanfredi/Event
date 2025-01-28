@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
 
+import { useAuth0 } from "@auth0/auth0-react";
+
 export default function Header() {
+  const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
@@ -31,13 +34,19 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm">
-            Sign up
-          </Button>
-          <Button size="sm">
-            <LogIn className="h-4 w-4 mr-2" />
-            Login
-          </Button>
+          {!isAuthenticated ? (
+            <Button size="sm" onClick={() => loginWithRedirect()}>
+              <LogIn className="h-4 w-4 mr-2" />
+              Login
+            </Button>
+          ) : (
+            <div className="flex items-center gap-4">
+              <span className="text-sm">{user?.name}</span>
+              <Button variant="ghost" size="sm" onClick={() => logout()}>
+                Logout
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </header>
