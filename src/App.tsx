@@ -3,15 +3,21 @@ import { useRoutes, Routes, Route } from "react-router-dom";
 import Home from "./components/home";
 import routes from "tempo-routes";
 
+import { useAuthRedirect } from "./hooks/useAuthRedirect";
+
 function App() {
+  useAuthRedirect();
+  const tempoRoutes =
+    import.meta.env.VITE_TEMPO === "true" ? useRoutes(routes) : null;
+
   return (
     <Suspense fallback={<p>Loading...</p>}>
-      <>
+      <div>
         <Routes>
           <Route path="/" element={<Home />} />
         </Routes>
-        {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
-      </>
+        {tempoRoutes}
+      </div>
     </Suspense>
   );
 }

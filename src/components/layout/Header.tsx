@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
+import { UserMenu } from "@/components/ui/user-menu";
 
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -40,12 +41,20 @@ export default function Header() {
               Login
             </Button>
           ) : (
-            <div className="flex items-center gap-4">
-              <span className="text-sm">{user?.name}</span>
-              <Button variant="ghost" size="sm" onClick={() => logout()}>
-                Logout
-              </Button>
-            </div>
+            <UserMenu
+              user={{
+                name: user?.name,
+                email: user?.email,
+                picture: user?.picture,
+              }}
+              onLogout={() =>
+                logout({
+                  logoutParams: {
+                    returnTo: window.location.origin,
+                  },
+                })
+              }
+            />
           )}
         </div>
       </div>

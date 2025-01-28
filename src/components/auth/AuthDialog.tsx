@@ -23,6 +23,12 @@ export default function AuthDialog({
   onOpenChange,
   onComplete,
 }: AuthDialogProps) {
+  const { loginWithRedirect, isLoading } = useAuth0();
+
+  const handleAuth = () => {
+    loginWithRedirect();
+    onComplete();
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -54,8 +60,12 @@ export default function AuthDialog({
                 placeholder="Create a password"
               />
             </div>
-            <Button className="w-full" onClick={onComplete}>
-              Sign Up
+            <Button
+              className="w-full"
+              onClick={handleAuth}
+              disabled={isLoading}
+            >
+              {isLoading ? "Loading..." : "Continue with Auth0"}
             </Button>
           </TabsContent>
           <TabsContent value="login" className="space-y-4">
@@ -77,13 +87,10 @@ export default function AuthDialog({
             </div>
             <Button
               className="w-full"
-              onClick={() => {
-                const { loginWithRedirect } = useAuth0();
-                loginWithRedirect();
-                onComplete();
-              }}
+              onClick={handleAuth}
+              disabled={isLoading}
             >
-              Login with Auth0
+              {isLoading ? "Loading..." : "Continue with Auth0"}
             </Button>
           </TabsContent>
         </Tabs>

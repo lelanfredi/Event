@@ -30,6 +30,7 @@ import {
   X,
   Search,
 } from "lucide-react";
+import { searchLocation } from "@/lib/google-maps";
 
 interface CoOrganizer {
   id: string;
@@ -89,6 +90,19 @@ const CustomizationPanel = ({
   onAddCoOrganizer = () => {},
   onRemoveCoOrganizer = () => {},
 }: CustomizationPanelProps) => {
+  const handleLocationSearch = async () => {
+    if (!location) return;
+
+    try {
+      const results = await searchLocation(location);
+      if (results.length > 0) {
+        onLocationChange(results[0].formatted_address || "");
+      }
+    } catch (error) {
+      console.error("Failed to search location:", error);
+    }
+  };
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -147,7 +161,11 @@ const CustomizationPanel = ({
                   value={location}
                   onChange={(e) => onLocationChange(e.target.value)}
                 />
-                <Button variant="outline" className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="flex gap-2"
+                  onClick={handleLocationSearch}
+                >
                   <Search className="h-4 w-4" />
                   Search
                 </Button>
@@ -163,7 +181,6 @@ const CustomizationPanel = ({
         </Card>
       </div>
 
-      {/* Rest of the component remains the same */}
       {/* Event Details Card */}
       <Card className="p-4">
         <div className="space-y-4">
